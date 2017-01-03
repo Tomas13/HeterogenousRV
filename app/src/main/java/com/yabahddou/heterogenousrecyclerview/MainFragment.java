@@ -43,8 +43,13 @@ public class MainFragment extends Fragment {
         fillListRooms();
         fillListBooks();
         fillListCats();
+
+        List<Object> objects = new ArrayList<>();
+        objects.addAll(cats);
+        objects.addAll(books);
+        objects.addAll(rooms);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new MainAdapter(rooms, books, cats));
+        recyclerView.setAdapter(new MainAdapter(objects));
         return view;
     }
 

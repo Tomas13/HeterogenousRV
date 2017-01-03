@@ -19,14 +19,10 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int TYPE_BOOKS = 2;
     private final int TYPE_CATS = 3;
 
-    private List<Room> rooms;
-    private List<Book> books;
-    private List<Cat> cats;
+    private List<Object> objectList;
 
-    public MainAdapter(List<Room> rooms, List<Book> books, List<Cat> cats) {
-        this.rooms = rooms;
-        this.books = books;
-        this.cats = cats;
+    public MainAdapter(List<Object> object) {
+        this.objectList = object;
     }
 
     @Override
@@ -48,34 +44,27 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 || (position == rooms.size() + 1) || (position == rooms.size() + books.size() + 2)) {
-            return TYPE_HEADER;
-        } else {
-            if (position > 0 && position < rooms.size() + 1) {
-                return TYPE_ROOMS;
-            } else if (position > rooms.size() + 1 && position < rooms.size() + books.size() + 2) {
-                return TYPE_BOOKS;
-            } else {//(position > rooms.size() + books.size() + 2)
-                return TYPE_CATS;
-            }
+
+        if(objectList.get(position) instanceof Room){
+            return TYPE_ROOMS;
+        } else if (objectList.get(position) instanceof Book){
+            return TYPE_BOOKS;
+        } else if (objectList.get(position) instanceof Cat){
+            return TYPE_CATS;
         }
+
+        return -1;
+
+
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         int viewType = holder.getItemViewType();
-        if (viewType == TYPE_HEADER) {
-            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-            if (position == 0) {
-                headerViewHolder.sectionTitle.setText("This is rooms header");
-            } else if (position == rooms.size() + 1) {
-                headerViewHolder.sectionTitle.setText("This is books header");
-            } else if (position == rooms.size() + books.size() + 2) {
-                headerViewHolder.sectionTitle.setText("This is cats header");
-            }
-        } else if (viewType == TYPE_ROOMS) {
+
+        if (viewType == TYPE_ROOMS) {
             RoomsViewHolder roomsViewHolder = (RoomsViewHolder) holder;
-            final Room currentRoom = rooms.get(position - 1);
+            Room currentRoom = (Room) objectList.get(position);
             roomsViewHolder.bookName.setText(currentRoom.getTitle());
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -86,8 +75,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         } else if (viewType == TYPE_BOOKS) {
             BooksViewHolder booksViewHolder = (BooksViewHolder) holder;
-            int bookPosition = position - rooms.size() - 2;
-            final Book currentBook = books.get(bookPosition);
+            Book currentBook = (Book) objectList.get(position);
             booksViewHolder.title.setText(currentBook.getName());
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -98,11 +86,10 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         } else if (viewType == TYPE_CATS) {
             CatsViewHolder catsViewHolder = (CatsViewHolder) holder;
-            int catPosition = position - rooms.size() - books.size() - 3;
 
-            final Cat currentCat = cats.get(catPosition);
+            final Cat currentCat = (Cat) objectList.get(position);
             catsViewHolder.catName.setText(currentCat.getName());
-            if (catPosition % 2 == 0) {
+            if (position % 2 == 0) {
                 catsViewHolder.catImage.setImageResource(R.drawable.cat_1);
             } else {
                 catsViewHolder.catImage.setImageResource(R.drawable.cat_4);
@@ -118,7 +105,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return rooms.size() + books.size() + cats.size() + 3;//3 headers
+        return this.objectList.size();// + 3;//3 headers
     }
 
     public class RoomsViewHolder extends RecyclerView.ViewHolder {
